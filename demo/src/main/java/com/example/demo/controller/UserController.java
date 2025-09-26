@@ -39,13 +39,13 @@ public class UserController {
     public String homeRedirect() { return "redirect:/login"; }
 
     // ----- LOGIN -----
-    @GetMapping("/https://hosting-employee-5.onrender.com/login")
+    @GetMapping("/login")
     public String showLoginForm(Model model) {
         model.addAttribute("user", new User());
         return "login";
     }
 
-    @PostMapping("/https://hosting-employee-5.onrender.com/login")
+    @PostMapping("/login")
     public String loginUser(@ModelAttribute("user") User user, Model model, HttpSession session) {
 
         Admin admin = adminRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
@@ -262,4 +262,5 @@ public class UserController {
 
 
 }
+
 
