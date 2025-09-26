@@ -11,7 +11,7 @@ COPY . .
 RUN chmod +x mvnw
 
 # Build the Spring Boot application (skip tests to speed up)
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # Expose port 8080 (Spring Boot default)
 EXPOSE 8080
