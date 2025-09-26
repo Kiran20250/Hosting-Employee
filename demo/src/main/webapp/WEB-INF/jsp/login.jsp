@@ -40,7 +40,7 @@
       </div>
 
       <!-- Form -->
-      <form action="https://hosting-employee-5.onrender.com/login" method="post">
+      <form action="login" method="post">
         <input type="text" name="username" placeholder="Enter Username" value="${user.username}" required/>
         <input type="password" name="password" placeholder="Enter Password" value="${user.password}" required/>
 
@@ -62,4 +62,5 @@
 
 </body>
 </html>
+
 
