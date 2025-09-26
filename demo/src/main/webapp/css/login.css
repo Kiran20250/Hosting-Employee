@@ -1,0 +1,147 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background: rgb(169, 173, 179);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background: rgba(11,50,83,255);
+  padding: 10px 20px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  min-height: 80px;
+}
+
+.header .logo img {
+  height: 120px;
+  width: 120px;
+}
+
+/* Login Card */
+.login-container {
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 90%;
+  max-width: 1000px;
+}
+
+.illustration {
+  flex: 1 1 300px;
+  background: rgba(11,50,83,255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+}
+
+.illustration img {
+  width: 80%;
+  height: auto;
+  max-width: 300px;
+}
+
+/* Login Form */
+.login-form {
+  flex: 1 1 300px;
+  background: rgba(11,50,83,255);
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-circle {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(to right, #0a1f3d, #063f4e);
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logocircleP {
+  font-weight: 600;
+  color: white;
+  font-size: 26px;
+}
+
+.login-form input {
+  background: white;
+  color: #333;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #141414;
+  font-size: 14px;
+}
+
+.login-form button {
+  margin-top: 20px;
+  padding: 12px;
+  background: white;
+  color: rgb(74, 145, 226);
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+#loginBtn:hover {
+  background: rgb(184, 183, 183);
+}
+
+.register {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.register p {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.register button {
+  margin-top: 5px;
+  padding: 8px 40px;
+  background: rgba(11,50,83,255);
+
+  color: rgb(74, 145, 226);
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Error Message */
+.error-msg {
+  margin-top: 15px;
+  color: red;
+  font-weight: 500;
+  font-size: 14px;
+}

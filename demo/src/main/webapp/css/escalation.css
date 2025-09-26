@@ -1,0 +1,162 @@
+/* General Body */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: rgb(169, 173, 179);
+}
+
+/* Header */
+header {
+    background: rgba(11,50,83,255);
+    color: white;
+    padding: 0px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    min-height: 80px;
+}
+.img {
+    height: 140px;
+    width: 140px;
+}
+
+/* Layout */
+.main-layout {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+/* Left Panel */
+.left-panel {
+    flex: 1 1 250px;
+    background: rgba(11,50,83,255);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    min-height: 300px;
+    color: white;
+    text-align: center;
+}
+.profile-circle {
+    margin: auto;
+    width: 90px;
+    height: 90px;
+    background: linear-gradient(to right, #0a1f3d, #063f4e);
+    border: 1px solid #5c5c5c;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+.logocircleP {
+    font-weight: 600;
+    color: white;
+    font-size: 18px;
+    margin-top: 10px;
+}
+.panel-box {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    color: rgb(105, 105, 105);
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Right Panel */
+.right-panel.escalation-panel {
+    flex: 3 1 600px;
+    background: rgba(11,50,83,255);
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    color: white;
+}
+.column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+     background: transparent !important;
+        padding: 10px;
+}
+.column-title {
+    text-align: center;
+    margin-bottom: 10px;
+}
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+      background: transparent !important;
+        padding: 0;
+        margin: 0;
+}
+.no-task {
+    text-align: center;
+    color: #ccc;
+    padding: 20px;
+}
+
+/* Employee Card */
+.task-card {
+    border-radius: 12px;
+    color: white;
+    padding: 15px;
+    cursor: pointer;
+    text-align: left;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    transition: 0.3s ease;
+
+}
+.task-card:hover {
+    transform: scale(1.05);
+}
+.priority-p1 {
+    background: linear-gradient(135deg, #ff4b2b, #ff416c);
+}
+.priority-p2 {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+
+.badge {
+    display: inline-block;
+    margin-top: 5px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: rgba(0,0,0,0.3);
+}
+
+/* Priority Colors */
+.priority-p1 { background: linear-gradient(to right, #ff4d4d, #b30000); }
+.priority-p2 { background: linear-gradient(to right, #ff944d, #e65c00); }
+.priority-p3 { background: linear-gradient(to right, #ffe066, #e6b800); color: black; }
+.priority-p4 { background: linear-gradient(to right, #66cc66, #267326); }
+.priority-p5 { background: linear-gradient(to right, #d9d9d9, #808080); color: black; }
+
+/* Back Button */
+.back-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ffc107;
+    color: #000;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}

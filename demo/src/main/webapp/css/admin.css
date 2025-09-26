@@ -1,0 +1,65 @@
+body { margin:0; font-family:'Poppins',sans-serif; background: rgb(169,173,179); }
+
+header {
+    background: rgba(11,50,83,255);
+    color: white;
+    padding: 0px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom-left-radius: 50px;
+    border-bottom-right-radius: 50px;
+    min-height: 80px;
+}
+.img {
+    height: 140px;
+    width: 140px;
+}
+
+
+/* Main Layout */
+.main-layout { display:flex; gap:20px; padding:20px; }
+
+/* Left Panel */
+.left-panel {
+    flex:1 1 250px;
+    background: rgba(11,50,83,255);
+    border-radius: 16px;
+    padding: 20px;
+    color:white;
+    text-align:center;
+}
+.logo-left { text-align:left; margin-bottom:20px; }
+.logo-left .logo-img { height:80px; width:80px; }
+
+.profile-circle { margin:auto; width:90px; height:90px; background: linear-gradient(to right,#0a1f3d,#063f4e); border-radius:50%; border:1px solid #5c5c5c; margin-bottom:10px; }
+.username { font-weight:600; font-size:18px; margin-bottom:20px; }
+.panel-box { background:white; color:#555; padding:15px; border-radius:12px; margin-bottom:20px; font-weight:600; }
+
+/* Right Panel */
+.right-panel { flex:3 1 700px; background: rgba(11,50,83,255); border-radius:12px; padding:20px; color:white; max-height: 700px; overflow-y:auto; }
+
+/* Columns */
+.column-headers { display:flex; font-weight:700; margin-bottom:10px;  color: DAF3FF ; background:DAF3FF;  border: 1px solid #ccc; }
+.col { flex:1; padding:5px 10px; text-align:center; }
+.col-task { flex:2; }
+
+.employee-rows { max-height: 600px; overflow-y:auto; }
+.employee-row { display:flex; margin-bottom:10px; }
+.task-list { max-height:150px; overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+.task-card { display:flex; justify-content:space-between; background: rgba(255,255,255,0.2); padding:10px; border-radius:10px; cursor:pointer; transition:0.2s ease; }
+.task-card:hover { transform:scale(1.02); }
+.task-left { flex:2; text-align:left; }
+.task-right { flex:1; text-align:center; font-weight:700; }
+.no-task { text-align:center; color:#ccc; padding:20px; }
+
+/* Priority Colors */
+.priority-p1 { background: linear-gradient(to right,#ff4d4d,#b30000); }
+.priority-p2 { background: linear-gradient(to right,#ff944d,#e65c00); }
+.priority-p3 { background: linear-gradient(to right,#ffe066,#e6b800); color:black; }
+.priority-p4 { background: linear-gradient(to right,#66cc66,#267326); }
+.priority-p5 { background: linear-gradient(to right,#d9d9d9,#808080); color:black; }
+
+/* Floating Buttons */
+.floating-buttons { position: fixed; bottom:20px; right:20px; display:flex; gap:10px; z-index:100; }
+.floating-buttons .btn { padding: 12px 20px; border-radius:10px; font-weight:600; cursor:pointer; }

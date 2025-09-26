@@ -1,0 +1,222 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: rgb(169, 173, 179);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background: rgba(11, 50, 83, 255);
+  color: white;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom-left-radius: 50px;
+  border-bottom-right-radius: 50px;
+  height: 150px;
+}
+
+.img {
+  height: 140px;
+  width: 140px;
+}
+
+.power-icon {
+  font-size: 40px;
+  color: black;
+  cursor: pointer;
+}
+
+/* Card */
+.register-container {
+  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 90%;
+  max-width: 1000px;
+  margin-top: 40px;
+}
+
+/* Left image */
+.illustration {
+  flex: 1 1 250px;
+  background: rgba(11, 50, 83, 255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.illustration img {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+}
+
+/* Right form */
+.register-form {
+  flex: 1 1 280px;
+  background: rgba(11, 50, 83, 255);
+  padding: 30px;  */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-circle {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(to right, #0a1f3d, #063f4e);
+  border-radius: 50%;
+  border: 1px solid #5c5c5c;
+  margin-bottom: 25px;
+  margin-left:120px
+}
+
+.logocircleP {
+  font-weight: 600;
+  margin-top: 22px;
+  color: white;
+  font-size: 30px;
+  margin-left: 20px;
+}
+
+/* Input Fields */
+.register-form input[type="text"],
+.register-form input[type="password"] {
+  width: 100%;
+  max-width: 350px;
+  margin: 8px 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #0e0e0e;
+  font-size: 14px;
+  background: white;
+  color: black;
+  font-weight: 600;
+}
+
+/* Upload Section */
+.upload-section {
+  width: 100%;
+  max-width: 350px;
+  margin-top: 20px;
+}
+
+.uplodText {
+  color: white;
+}
+
+/* Hide the original file input */
+/* Hide the original file input */
+.file-upload input[type="file"] {
+  display: none;
+}
+
+/* Container for upload */
+.file-upload {
+  margin: 10px 0;
+}
+
+/* Upload button same as input box */
+.upload-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover/focus same as input focus */
+.upload-btn:hover,
+.upload-btn:focus {
+  border-color: rgb(74, 145, 226);
+  box-shadow: 0 0 5px rgba(74, 145, 226, 0.5);
+}
+
+/* File name text (show inside box style) */
+.file-name {
+  display: block;
+  margin-top: 5px;
+  font-size: 13px;
+  color: #666;
+}
+
+
+.file-upload input {
+  margin-top: 5px;
+  margin-left: 10px;
+  width: 60%;
+}
+
+.note {
+  background: #fff3cd;
+  color: #856404;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  border: 1px solid #ffeeba;
+  margin-top: 10px;
+}
+
+/* Register Button */
+#registerBtn {
+  margin-top: 20px;
+  padding: 12px;
+  background: white;
+  color: rgb(74, 145, 226);
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 75%;
+  transition: background 0.3s ease;
+}
+
+#registerBtn:hover {
+  background: rgb(184, 183, 183);
+}
+
+/* Login Section */
+.login-link {
+  margin-top: 20px;
+  text-align: center;
+  margin-right:130px
+}
+
+.login-link p {
+  font-size: 15px;
+  color: white;
+
+}
+
+.login-link button {
+  margin-top: 5px;
+  padding: 6px 40px;
+  background: rgba(11, 50, 83, 255);
+  color: rgb(74, 145, 226);
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
