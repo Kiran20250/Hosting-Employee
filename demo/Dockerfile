@@ -1,23 +1,30 @@
-# Use OpenJDK 17 as base image
-FROM openjdk:17-jdk-slim
+# -------------------------
+# Build Stage (has Maven)
+# -------------------------
+FROM maven:3.9.3-eclipse-temurin-20 AS build
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy Maven wrapper and project files
-COPY . .
+# Copy pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Make Maven wrapper executable
-RUN chmod +x mvnw
+# Copy all source code
+COPY src ./src
 
-# Build the Spring Boot application (skip tests to speed up)
+# Package the application (skip tests)
 RUN mvn clean package -DskipTests
 
-# Expose port 8080 (Spring Boot default)
+# -------------------------
+# Runtime Stage (only JDK, no Maven needed)
+# -------------------------
+FROM eclipse-temurin:20-jdk-alpine
+
+WORKDIR /app
+
+# Copy the JAR built in the build stage
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Set environment variable for Render port
-ENV PORT=8080
-
-# Run the Spring Boot app
-CMD ["java", "-jar", "target/demo-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
