@@ -202,15 +202,18 @@ public class UserController {
     }
 
     // ----- DEBUG PDF LIST -----
-    @GetMapping("/debug-pdfs")
-    public String debugPDFs(Model model) {
-        String uploadsDir = "/mnt/data/uploads/";
-        File dir = new File(uploadsDir);
-        String[] pdfFiles = dir.list((d, name) -> name.toLowerCase().endsWith(".pdf"));
+   @GetMapping("/debug-pdfs")
+public String debugPDFs(Model model) {
+    String uploadsDir = "/mnt/data/uploads/";
+    File dir = new File(uploadsDir);
 
-        model.addAttribute("pdfFiles", pdfFiles != null ? pdfFiles : new String[0]);
-        return "viewPdf";
-    }
+    String[] pdfFiles = dir.list((d, name) -> name.toLowerCase().endsWith(".pdf"));
+
+    // If null, give empty array
+    model.addAttribute("pdfFiles", pdfFiles != null ? pdfFiles : new String[0]);
+    return "viewPdf";
+}
+
 
     // ----- TASK PAGE -----
     @GetMapping("/tasks")
@@ -269,3 +272,4 @@ public class UserController {
         return "emp-escalation";
     }
 }
+
