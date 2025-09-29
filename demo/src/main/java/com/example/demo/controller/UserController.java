@@ -167,39 +167,38 @@ public class UserController {
         return "redirect:/login";
     }
 
-    // ---------------- VIEW PDF ----------------
-@GetMapping("/view-pdf/{filename}")
-public void viewPDF(@PathVariable String filename, HttpServletResponse response) {
-    String uploadsDir = "/mnt/data/uploads/";
-    File file = new File(uploadsDir + filename);
+    // ----- VIEW PDF -----
+    @GetMapping("/view-pdf/{filename}")
+    public void viewPDF(@PathVariable String filename, HttpServletResponse response) {
+        String uploadsDir = "/mnt/data/uploads/";
+        File file = new File(uploadsDir + filename);
 
-    if (!file.exists()) {
-        try {
-            response.setContentType("text/html");
-            response.getWriter().write("<h3>File not found: " + filename + "</h3>");
+        if (!file.exists()) {
+            try {
+                response.setContentType("text/html");
+                response.getWriter().write("<h3>File not found: " + filename + "</h3>");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
+
+        try (FileInputStream fis = new FileInputStream(file);
+             OutputStream os = response.getOutputStream()) {
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.flush();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return;
-    }
-
-    response.setContentType("application/pdf");
-    response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
-
-    try (FileInputStream fis = new FileInputStream(file);
-         OutputStream os = response.getOutputStream()) {
-
-        byte[] buffer = new byte[1024];
-        int bytesRead;
-
-        while ((bytesRead = fis.read(buffer)) != -1) {
-            os.write(buffer, 0, bytesRead);
-        }
-
-        os.flush();
-
-    } catch (IOException e) {
-        e.printStackTrace();
     }
 
     // ----- DEBUG PDF LIST -----
@@ -223,7 +222,6 @@ public void viewPDF(@PathVariable String filename, HttpServletResponse response)
         List<Task> tasks = userService.getTasksByUserId(userId);
 
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
         String inTime = user.getInTime() != null ? user.getInTime().format(timeFormatter) : "";
 
         model.addAttribute("inTime", inTime);
@@ -271,4 +269,3 @@ public void viewPDF(@PathVariable String filename, HttpServletResponse response)
         return "emp-escalation";
     }
 }
-
