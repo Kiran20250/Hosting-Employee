@@ -168,28 +168,38 @@ public class UserController {
     }
 
     // ---------------- VIEW PDF ----------------
-    @GetMapping("/view-pdf/{filename}")
-    public void viewPDF(@PathVariable String filename, HttpServletResponse response) throws IOException {
-        String uploadsDir = "/mnt/data/uploads/";
-        File file = new File(uploadsDir + filename);
+@GetMapping("/view-pdf/{filename}")
+public void viewPDF(@PathVariable String filename, HttpServletResponse response) {
+    String uploadsDir = "/mnt/data/uploads/";
+    File file = new File(uploadsDir + filename);
 
-        if (!file.exists()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found");
-            return;
+    if (!file.exists()) {
+        try {
+            response.setContentType("text/html");
+            response.getWriter().write("<h3>File not found: " + filename + "</h3>");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return;
+    }
+
+    response.setContentType("application/pdf");
+    response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
+
+    try (FileInputStream fis = new FileInputStream(file);
+         OutputStream os = response.getOutputStream()) {
+
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+
+        while ((bytesRead = fis.read(buffer)) != -1) {
+            os.write(buffer, 0, bytesRead);
         }
 
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
-        response.setContentLengthLong(file.length());
+        os.flush();
 
-        try (FileInputStream fis = new FileInputStream(file);
-             OutputStream os = response.getOutputStream()) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
-            }
-        }
+    } catch (IOException e) {
+        e.printStackTrace();
     }
 
     // ----- DEBUG PDF LIST -----
@@ -261,3 +271,4 @@ public class UserController {
         return "emp-escalation";
     }
 }
+
