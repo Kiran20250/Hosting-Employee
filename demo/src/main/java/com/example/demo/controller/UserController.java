@@ -1,14 +1,11 @@
 package com.example.demo.controller;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import com.example.demo.entity.Admin;
 import com.example.demo.entity.Task;
 import com.example.demo.entity.User;
 import com.example.demo.repository.AdminRepository;
 import com.example.demo.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +15,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
 
 @Controller
 public class UserController {
@@ -36,7 +31,9 @@ public class UserController {
     private AdminRepository adminRepository;
 
     @GetMapping("/")
-    public String homeRedirect() { return "redirect:/login"; }
+    public String homeRedirect() {
+        return "redirect:/login";
+    }
 
     // ----- LOGIN -----
     @GetMapping("/login")
@@ -108,89 +105,97 @@ public class UserController {
         return "register";
     }
 
-   // ----- REGISTER -----
-@PostMapping("/register")
-public String registerUser(@Valid @ModelAttribute("user") User user,
-                           BindingResult result,
-                           Model model) throws IOException {
+    @PostMapping("/register")
+    public String registerUser(@Valid @ModelAttribute("user") User user,
+                               BindingResult result,
+                               Model model) throws IOException {
 
-    if (result.hasErrors()) {
-        model.addAttribute("error", result.getFieldError("password").getDefaultMessage());
-        return "register";
-    }
-    if (!user.getPassword().equals(user.getConfirmPassword())) {
-        model.addAttribute("error", "Passwords do not match!");
-        return "register";
-    }
-
-    // Use Render persistent storage
-    String uploadsDir = "/mnt/data/uploads/";
-    File dir = new File(uploadsDir);
-    if (!dir.exists()) dir.mkdirs();
-
-    // Marksheets
-    MultipartFile marksheetFile = user.getMarksheetFile();
-    if (marksheetFile != null && !marksheetFile.isEmpty()) {
-        if (marksheetFile.getSize() > 1024 * 1024) {
-            model.addAttribute("error", "Marksheet file size must be <= 1MB");
+        if (result.hasErrors()) {
+            model.addAttribute("error", result.getFieldError("password").getDefaultMessage());
             return "register";
         }
-        String filename = System.currentTimeMillis() + "_marksheet_" + marksheetFile.getOriginalFilename();
-        File file = new File(dir, filename);
-        marksheetFile.transferTo(file);
-        user.setAcademicMarksheet("/uploads/" + filename); // store relative path
-    }
-
-    // Aadhar
-    MultipartFile aadharFile = user.getAadharFile();
-    if (aadharFile != null && !aadharFile.isEmpty()) {
-        if (aadharFile.getSize() > 1024 * 1024) {
-            model.addAttribute("error", "Aadhar file size must be <= 1MB");
+        if (!user.getPassword().equals(user.getConfirmPassword())) {
+            model.addAttribute("error", "Passwords do not match!");
             return "register";
         }
-        String filename = System.currentTimeMillis() + "_aadhar_" + aadharFile.getOriginalFilename();
-        File file = new File(dir, filename);
-        aadharFile.transferTo(file);
-        user.setAadharCard("/uploads/" + filename);
-    }
 
-    // PAN
-    MultipartFile panFile = user.getPanFile();
-    if (panFile != null && !panFile.isEmpty()) {
-        if (panFile.getSize() > 1024 * 1024) {
-            model.addAttribute("error", "PAN file size must be <= 1MB");
-            return "register";
+        // Use Render persistent storage
+        String uploadsDir = "/mnt/data/uploads/";
+        File dir = new File(uploadsDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        // Marksheets
+        MultipartFile marksheetFile = user.getMarksheetFile();
+        if (marksheetFile != null && !marksheetFile.isEmpty()) {
+            if (marksheetFile.getSize() > 1024 * 1024) {
+                model.addAttribute("error", "Marksheet file size must be <= 1MB");
+                return "register";
+            }
+            String filename = System.currentTimeMillis() + "_marksheet_" + marksheetFile.getOriginalFilename();
+            File file = new File(dir, filename);
+            marksheetFile.transferTo(file);
+            user.setAcademicMarksheet("/uploads/" + filename); // store relative path
         }
-        String filename = System.currentTimeMillis() + "_pan_" + panFile.getOriginalFilename();
-        File file = new File(dir, filename);
-        panFile.transferTo(file);
-        user.setPanCard("/uploads/" + filename);
+
+        // Aadhar
+        MultipartFile aadharFile = user.getAadharFile();
+        if (aadharFile != null && !aadharFile.isEmpty()) {
+            if (aadharFile.getSize() > 1024 * 1024) {
+                model.addAttribute("error", "Aadhar file size must be <= 1MB");
+                return "register";
+            }
+            String filename = System.currentTimeMillis() + "_aadhar_" + aadharFile.getOriginalFilename();
+            File file = new File(dir, filename);
+            aadharFile.transferTo(file);
+            user.setAadharCard("/uploads/" + filename);
+        }
+
+        // PAN
+        MultipartFile panFile = user.getPanFile();
+        if (panFile != null && !panFile.isEmpty()) {
+            if (panFile.getSize() > 1024 * 1024) {
+                model.addAttribute("error", "PAN file size must be <= 1MB");
+                return "register";
+            }
+            String filename = System.currentTimeMillis() + "_pan_" + panFile.getOriginalFilename();
+            File file = new File(dir, filename);
+            panFile.transferTo(file);
+            user.setPanCard("/uploads/" + filename);
+        }
+
+        userService.saveUser(user);
+        return "redirect:/login";
     }
 
-    userService.saveUser(user);
-    return "redirect:/login";
-}
-
-
-    // ---------------- VIEW PDF (Debugging) ----------------
+    // ---------------- VIEW PDF ----------------
     @GetMapping("/view-pdf/{filename}")
-    public ResponseEntity<FileSystemResource> viewPDF(@PathVariable String filename) {
-        String uploadsDir = "src/main/webapp/uploads/";
+    public void viewPDF(@PathVariable String filename, HttpServletResponse response) throws IOException {
+        String uploadsDir = "/mnt/data/uploads/";
         File file = new File(uploadsDir + filename);
+
         if (!file.exists()) {
-            return ResponseEntity.notFound().build();
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not found");
+            return;
         }
 
-        FileSystemResource resource = new FileSystemResource(file);
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
+        response.setContentLengthLong(file.length());
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
-                .body(resource);
+        try (FileInputStream fis = new FileInputStream(file);
+             OutputStream os = response.getOutputStream()) {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+        }
     }
 
+    // ----- DEBUG PDF LIST -----
     @GetMapping("/debug-pdfs")
     public String debugPDFs(Model model) {
-        String uploadsDir = "src/main/webapp/uploads/";
+        String uploadsDir = "/mnt/data/uploads/";
         File dir = new File(uploadsDir);
         String[] pdfFiles = dir.list((d, name) -> name.toLowerCase().endsWith(".pdf"));
 
@@ -233,29 +238,20 @@ public String registerUser(@Valid @ModelAttribute("user") User user,
         return "redirect:/tasks";
     }
 
-    //  Employee Escalation Page
+    // ----- EMPLOYEE ESCALATION -----
     @GetMapping("/emp/escalation")
     public String viewEscalations(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/login";
-        }
+        if (userId == null) return "redirect:/login";
 
         User user = userService.findUserById(userId);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        String inTime = user.getInTime() != null ? user.getInTime().format(formatter) : "";
 
-        //  inTime formatted only HH:mm
-        String inTime = "";
-        if (user.getInTime() != null) {
-            inTime = user.getInTime().format(formatter);
-        }
-
-        // Common info
         model.addAttribute("name", user.getUsername());
         model.addAttribute("inTime", inTime);
         model.addAttribute("taskCount", userService.getTaskCount(user.getId()));
 
-        // Due & Escalated tasks
         List<Task> dueTasks = userService.getDueTasks(user);
         List<Task> escalatedTasks = userService.getEscalatedTasks(user);
 
@@ -264,6 +260,4 @@ public String registerUser(@Valid @ModelAttribute("user") User user,
 
         return "emp-escalation";
     }
-
-
 }
