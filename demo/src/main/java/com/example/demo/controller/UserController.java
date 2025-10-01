@@ -6,6 +6,7 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.AdminRepository;
 import com.example.demo.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;   // ✅ Add this
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +17,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;   // ✅ Add this
+import java.io.OutputStream;     // ✅ Add this
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 
 @Controller
 public class UserController {
@@ -304,4 +308,5 @@ public String debugPDFs(Model model) {
     }
 
 }
+
 
