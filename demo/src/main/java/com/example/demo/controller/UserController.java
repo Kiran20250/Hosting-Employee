@@ -140,10 +140,12 @@ public class UserController {
             return "register";
         }
 
-        String uploadsDir = request.getServletContext().getRealPath("/uploads/");
+        // Use Render persistent storage
+        String uploadsDir = "/mnt/data/uploads/";
         File dir = new File(uploadsDir);
         if (!dir.exists()) dir.mkdirs();
 
+        // Marksheets
         MultipartFile marksheetFile = user.getMarksheetFile();
         if (marksheetFile != null && !marksheetFile.isEmpty()) {
             if (marksheetFile.getSize() > 1024 * 1024) {
@@ -153,9 +155,10 @@ public class UserController {
             String filename = System.currentTimeMillis() + "_marksheet_" + marksheetFile.getOriginalFilename();
             File file = new File(dir, filename);
             marksheetFile.transferTo(file);
-            user.setAcademicMarksheet("/uploads/" + filename);
+            user.setAcademicMarksheet("/uploads/" + filename); // store relative path
         }
 
+        // Aadhar
         MultipartFile aadharFile = user.getAadharFile();
         if (aadharFile != null && !aadharFile.isEmpty()) {
             if (aadharFile.getSize() > 1024 * 1024) {
@@ -168,6 +171,7 @@ public class UserController {
             user.setAadharCard("/uploads/" + filename);
         }
 
+        // PAN
         MultipartFile panFile = user.getPanFile();
         if (panFile != null && !panFile.isEmpty()) {
             if (panFile.getSize() > 1024 * 1024) {
@@ -184,6 +188,52 @@ public class UserController {
         return "redirect:/login";
     }
 
+    // ----- VIEW PDF -----
+    @GetMapping("/view-pdf/{filename}")
+    public void viewPDF(@PathVariable String filename, HttpServletResponse response) {
+        String uploadsDir = "/mnt/data/uploads/";
+        File file = new File(uploadsDir + filename);
+
+        if (!file.exists()) {
+            try {
+                response.setContentType("text/html");
+                response.getWriter().write("<h3>File not found: " + filename + "</h3>");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return;
+        }
+
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
+
+        try (FileInputStream fis = new FileInputStream(file);
+             OutputStream os = response.getOutputStream()) {
+
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ----- DEBUG PDF LIST -----
+   @GetMapping("/debug-pdfs")
+public String debugPDFs(Model model) {
+    String uploadsDir = "/mnt/data/uploads/";
+    File dir = new File(uploadsDir);
+
+    String[] pdfFiles = dir.list((d, name) -> name.toLowerCase().endsWith(".pdf"));
+
+    // If null, give empty array
+    model.addAttribute("pdfFiles", pdfFiles != null ? pdfFiles : new String[0]);
+    return "viewPdf";
+}
     // ----- TASK PAGE -----
     @GetMapping("/tasks")
     public String showTasks(HttpSession session, Model model) {
@@ -254,3 +304,4 @@ public class UserController {
     }
 
 }
+
