@@ -5,7 +5,7 @@ import com.example.demo.entity.Task;
 import com.example.demo.entity.User;
 import com.example.demo.repository.AdminRepository;
 import com.example.demo.service.UserService;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,9 +32,7 @@ public class UserController {
     private AdminRepository adminRepository;
 
     @GetMapping("/")
-    public String homeRedirect() {
-        return "redirect:/login";
-    }
+    public String homeRedirect() { return "redirect:/login"; }
 
     // ----- LOGIN -----
     @GetMapping("/login")
@@ -45,6 +44,13 @@ public class UserController {
     @PostMapping("/login")
     public String loginUser(@ModelAttribute("user") User user, Model model, HttpSession session) {
 
+        // ----------- STRICT EMAIL CHECK -----------
+        if (!user.getUsername().endsWith("@crbix.in")) {
+            model.addAttribute("error", "Username must end with @crbix.in");
+            return "login";
+        }
+
+        // ----------- ADMIN LOGIN -----------
         Admin admin = adminRepository.findByUsernameAndPassword(user.getUsername(), user.getPassword());
         if (admin != null) {
             session.setAttribute("admin", admin);
@@ -59,6 +65,7 @@ public class UserController {
             return "redirect:/admin";
         }
 
+        // ----------- EMPLOYEE LOGIN -----------
         User validUser = userService.login(user.getUsername(), user.getPassword());
         if (validUser != null) {
             LocalDate today = LocalDate.now();
@@ -74,7 +81,13 @@ public class UserController {
             model.addAttribute("name", validUser.getUsername());
             model.addAttribute("tasks", tasks);
             model.addAttribute("inTime", validUser.getInTime().format(formatter));
-            model.addAttribute("taskCount", tasks.size());
+
+            // ----------- COMMENTED: No of Tasks Assigned -----------
+            // model.addAttribute("taskCount", tasks.size());
+
+            // ----------- NEW: No of Tasks Completed -----------
+            int completedTaskCount = userService.getCompletedTaskCountForUser(validUser.getId());
+            model.addAttribute("CompletedTaskCount", completedTaskCount);
 
             return "task";
         } else {
@@ -108,23 +121,29 @@ public class UserController {
     @PostMapping("/register")
     public String registerUser(@Valid @ModelAttribute("user") User user,
                                BindingResult result,
-                               Model model) throws IOException {
+                               Model model,
+                               HttpServletRequest request) throws IOException {
 
         if (result.hasErrors()) {
             model.addAttribute("error", result.getFieldError("password").getDefaultMessage());
             return "register";
         }
+
+        // ----------- STRICT EMAIL CHECK DURING REGISTER -----------
+        if (!user.getUsername().endsWith("@crbix.in")) {
+            model.addAttribute("error", "Username must end with @crbix.in");
+            return "register";
+        }
+
         if (!user.getPassword().equals(user.getConfirmPassword())) {
             model.addAttribute("error", "Passwords do not match!");
             return "register";
         }
 
-        // Use Render persistent storage
-        String uploadsDir = "/mnt/data/uploads/";
+        String uploadsDir = request.getServletContext().getRealPath("/uploads/");
         File dir = new File(uploadsDir);
         if (!dir.exists()) dir.mkdirs();
 
-        // Marksheets
         MultipartFile marksheetFile = user.getMarksheetFile();
         if (marksheetFile != null && !marksheetFile.isEmpty()) {
             if (marksheetFile.getSize() > 1024 * 1024) {
@@ -134,10 +153,9 @@ public class UserController {
             String filename = System.currentTimeMillis() + "_marksheet_" + marksheetFile.getOriginalFilename();
             File file = new File(dir, filename);
             marksheetFile.transferTo(file);
-            user.setAcademicMarksheet("/uploads/" + filename); // store relative path
+            user.setAcademicMarksheet("/uploads/" + filename);
         }
 
-        // Aadhar
         MultipartFile aadharFile = user.getAadharFile();
         if (aadharFile != null && !aadharFile.isEmpty()) {
             if (aadharFile.getSize() > 1024 * 1024) {
@@ -150,7 +168,6 @@ public class UserController {
             user.setAadharCard("/uploads/" + filename);
         }
 
-        // PAN
         MultipartFile panFile = user.getPanFile();
         if (panFile != null && !panFile.isEmpty()) {
             if (panFile.getSize() > 1024 * 1024) {
@@ -167,54 +184,6 @@ public class UserController {
         return "redirect:/login";
     }
 
-    // ----- VIEW PDF -----
-    @GetMapping("/view-pdf/{filename}")
-    public void viewPDF(@PathVariable String filename, HttpServletResponse response) {
-        String uploadsDir = "/mnt/data/uploads/";
-        File file = new File(uploadsDir + filename);
-
-        if (!file.exists()) {
-            try {
-                response.setContentType("text/html");
-                response.getWriter().write("<h3>File not found: " + filename + "</h3>");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "inline; filename=\"" + filename + "\"");
-
-        try (FileInputStream fis = new FileInputStream(file);
-             OutputStream os = response.getOutputStream()) {
-
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                os.write(buffer, 0, bytesRead);
-            }
-            os.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // ----- DEBUG PDF LIST -----
-   @GetMapping("/debug-pdfs")
-public String debugPDFs(Model model) {
-    String uploadsDir = "/mnt/data/uploads/";
-    File dir = new File(uploadsDir);
-
-    String[] pdfFiles = dir.list((d, name) -> name.toLowerCase().endsWith(".pdf"));
-
-    // If null, give empty array
-    model.addAttribute("pdfFiles", pdfFiles != null ? pdfFiles : new String[0]);
-    return "viewPdf";
-}
-
-
     // ----- TASK PAGE -----
     @GetMapping("/tasks")
     public String showTasks(HttpSession session, Model model) {
@@ -230,7 +199,13 @@ public String debugPDFs(Model model) {
         model.addAttribute("inTime", inTime);
         model.addAttribute("tasks", tasks);
         model.addAttribute("name", user.getUsername());
-        model.addAttribute("taskCount", tasks.size());
+
+        // ----------- COMMENTED: No of Tasks Assigned -----------
+        // model.addAttribute("taskCount", tasks.size());
+
+        // ----------- NEW: No of Tasks Completed -----------
+        int completedTaskCount = userService.getCompletedTaskCountForUser(user.getId());
+        model.addAttribute("CompletedTaskCount", completedTaskCount);
 
         return "task";
     }
@@ -261,7 +236,13 @@ public String debugPDFs(Model model) {
 
         model.addAttribute("name", user.getUsername());
         model.addAttribute("inTime", inTime);
-        model.addAttribute("taskCount", userService.getTaskCount(user.getId()));
+
+        // ----------- COMMENTED: No of Tasks Assigned -----------
+        // model.addAttribute("taskCount", userService.getTaskCount(user.getId()));
+
+        // ----------- NEW: No of Tasks Completed -----------
+        int completedTaskCount = userService.getCompletedTaskCountForUser(user.getId());
+        model.addAttribute("CompletedTaskCount", completedTaskCount);
 
         List<Task> dueTasks = userService.getDueTasks(user);
         List<Task> escalatedTasks = userService.getEscalatedTasks(user);
@@ -271,5 +252,5 @@ public String debugPDFs(Model model) {
 
         return "emp-escalation";
     }
-}
 
+}

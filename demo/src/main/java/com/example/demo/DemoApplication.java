@@ -19,9 +19,8 @@ public class DemoApplication extends SpringBootServletInitializer {
     }
 
     public static void main(String[] args) {
-          // Set JVM default time zone to IST
+        // Set JVM default time zone to IST
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Kolkata"));
         SpringApplication.run(DemoApplication.class, args);
     }
 }
-

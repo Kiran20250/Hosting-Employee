@@ -22,7 +22,7 @@
   <!-- Header -->
   <header class="header">
     <div class="logo">
-            <img class="img" src="${pageContext.request.contextPath}/img/CRBIXLOGO.png" alt="Logo">
+      <img class="img" src="${pageContext.request.contextPath}/img/CRBIXLOGO.png" alt="Logo">
     </div>
   </header>
 
@@ -30,15 +30,18 @@
   <div class="login-container">
     <!-- Left Illustration -->
     <div class="illustration">
-            <img class="img" src="${pageContext.request.contextPath}/img/CRBIXLOGO.png" alt="Logo">
+      <img class="img" src="${pageContext.request.contextPath}/img/CRBIXLOGO.png" alt="Logo">
     </div>
 
     <!-- Right Login Form -->
     <div class="login-form">
+
+      <!--
       <div class="logo-circle">
         <p class="logocircleP">OK</p>
       </div>
-
+        -->
+        
       <!-- Form -->
       <form action="login" method="post">
         <input type="text" name="username" placeholder="Enter Username" value="${user.username}" required/>
@@ -54,9 +57,16 @@
         </form>
       </div>
 
+      <!-- Error Messages -->
       <c:if test="${not empty error}">
         <p class="error-msg">${error}</p>
       </c:if>
+
+      <!-- Optional: client-side hint for email format
+      <c:if test="${empty error}">
+        <p class="hint-msg">Username must end with <strong>@crbix.in</strong></p>
+      </c:if>
+-->
     </div>
   </div>
 

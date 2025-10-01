@@ -12,10 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,13 +44,57 @@ public class AdminController {
         String inTime = (loginTime != null) ? loginTime.format(formatter) : "--:--";
 
         model.addAttribute("username", admin.getUsername());
-
         model.addAttribute("inTime", inTime);
-        model.addAttribute("taskCount", adminService.getTotalTasksAssigned());
-        model.addAttribute("employees", adminService.getAllEmployees());
+
+        // Commented: Old total task count
+        // model.addAttribute("taskCount", adminService.getTotalTasksAssigned());
+
+        // Get all employees
+        List<User> employees = adminService.getAllEmployees();
+
+
+
+        // Add completed task count for each employee
+        int totalCompletedTasks = 0;
+        for (User emp : employees) {
+            totalCompletedTasks += adminService.getCompletedTaskCountForUser(emp.getId());
+        }
+        model.addAttribute("taskCountCompleted", totalCompletedTasks);
+
+        model.addAttribute("employees", employees);
         model.addAttribute("allTasks", adminService.getAllTasks());
 
         return "admin";
+    }
+
+    // ---------------- ADMIN LOGIN ----------------
+    @PostMapping("/admin/login")
+    public String adminLogin(@RequestParam String username,
+                             @RequestParam String password,
+                             HttpSession session,
+                             Model model) {
+
+        // -------- STRICT @crbix.in CHECK --------
+        if (!username.endsWith("@crbix.in")) {
+            model.addAttribute("error", "Admin username must end with @crbix.in");
+            return "login";
+        }
+
+        Admin admin = adminService.findAdminByUsername(username);
+        if (admin != null && admin.getPassword().equals(password)) {
+            session.setAttribute("admin", admin);
+            session.setAttribute("adminName", admin.getUsername());
+
+            if (admin.getInTime() == null) {
+                admin.setInTime(LocalDateTime.now());
+                adminService.saveAdmin(admin);
+            }
+
+            return "redirect:/admin";
+        } else {
+            model.addAttribute("error", "Invalid Username or Password!");
+            return "login";
+        }
     }
 
     // ---------------- ASSIGN TASK ----------------
@@ -75,9 +117,7 @@ public class AdminController {
 
                 String deadlineStr = request.getParameter("dueDateTime");
                 if (deadlineStr != null && !deadlineStr.isEmpty()) {
-                    LocalDate deadlineDate = LocalDate.parse(deadlineStr);
-                    LocalDateTime deadline = deadlineDate.atTime(23, 59);
-                    task.setDueDate(deadline);
+                    task.setDueDate(LocalDateTime.parse(deadlineStr + "T23:59:00"));
                 }
 
                 String priorityStr = request.getParameter("priority");
@@ -92,12 +132,10 @@ public class AdminController {
                 }
 
                 User user = adminService.findUserById((long) userId);
-                if (user != null) {
-                    task.setUser(user);
-                }
+                if (user != null) task.setUser(user);
+
                 task.setAssignedBy(admin);
                 task.setStatus("Not Started");
-
                 taskRepository.save(task);
             }
         }
@@ -105,9 +143,6 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    // ---------------- ESCALATION VIEW ----------------
-    //  Escalation Dashboard
-// ---------------- ESCALATION VIEW ----------------
     // ---------------- ESCALATION VIEW ----------------
     @GetMapping("/admin/escalation")
     public String escalationDashboard(HttpSession session, Model model) {
@@ -117,21 +152,26 @@ public class AdminController {
         Admin admin = adminService.findAdminByUsername(adminName);
         if (admin == null) return "redirect:/login";
 
-        // ✅ Format login time
         LocalDateTime loginTime = admin.getInTime();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String inTime = (loginTime != null) ? loginTime.format(formatter) : "--:--";
 
-        // ✅ Get total tasks assigned
-        Long taskCount = adminService.getTotalTasksAssigned();
+
+        //total task count
+        List<User> employees = adminService.getAllEmployees();
+        int totalCompletedTasks = 0;
+        for (User emp : employees) {
+            totalCompletedTasks += adminService.getCompletedTaskCountForUser(emp.getId());
+        }
+        model.addAttribute("CompletedTaskCount", totalCompletedTasks);
 
 
-        // ✅ Add to model
         model.addAttribute("username", admin.getUsername());
         model.addAttribute("inTime", inTime);
-        model.addAttribute("taskCount", taskCount);
 
-        // ✅ Escalation data
+        // Commented: Old total task count
+        // model.addAttribute("taskCount", adminService.getTotalTasksAssigned());
+
         Map<String, Object> escalationData = adminService.getEscalationData();
         model.addAttribute("dueEmployees", escalationData.get("dueEmployees"));
         model.addAttribute("escalatedEmployees", escalationData.get("escalatedEmployees"));
@@ -141,11 +181,6 @@ public class AdminController {
 
         return "escalation";
     }
-
-
-
-
-
 
     // ---------------- UPDATE TASK ----------------
     @PostMapping("/admin/update-task")
@@ -160,12 +195,7 @@ public class AdminController {
 
             String dueDateStr = request.getParameter("dueDate");
             if (dueDateStr != null && !dueDateStr.isEmpty()) {
-                try {
-                    LocalDate deadlineDate = LocalDate.parse(dueDateStr);
-                    task.setDueDate(deadlineDate.atTime(23, 59));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                task.setDueDate(LocalDateTime.parse(dueDateStr + "T23:59:00"));
             }
 
             String priorityStr = request.getParameter("priority");
@@ -180,10 +210,8 @@ public class AdminController {
             taskRepository.save(task);
         }
 
-        //  Always return to admin dashboard
         return "redirect:/admin";
     }
-
 
     // ---------------- DELETE TASK ----------------
     @PostMapping("/admin/delete-task")
@@ -193,5 +221,11 @@ public class AdminController {
     }
 
 
+    // ✅ Mark task as completed
+    @PostMapping("/admin/complete-task")
+    public String completeTask(@RequestParam Long taskId) {
+        adminService.markTaskCompleted(taskId);
+        return "redirect:/admin";
+    }
 
 }

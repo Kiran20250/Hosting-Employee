@@ -53,9 +53,18 @@ public class UserService {
     }
 
     //Escalation
-    public int getTaskCount(Long userId) {
-        return taskRepository.findByUserId(userId).size();
+//    public int getTaskCount(Long userId) {
+//        return taskRepository.findByUserId(userId).size();
+//    }
+
+
+    //  completed tasks  count
+    public int getCompletedTaskCountForUser(Long userId) {
+        return (int) taskRepository.findByUserId(userId).stream()
+                .filter(task -> "COMPLETED".equalsIgnoreCase(task.getStatus()))
+                .count();
     }
+
 
     public List<Task> getTasksForUser(Long userId) {
         return taskRepository.findByUserId(userId);

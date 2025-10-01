@@ -46,9 +46,21 @@ public class AdminService {
         return taskRepository.findAll();
     }
 
-    public Long getTotalTasksAssigned() {
-        return taskRepository.count();
+    //Total task assigned
+
+//    public Long getTotalTasksAssigned() {
+//        return taskRepository.count();
+//    }
+
+    // ----------- NEW: Total Completed Tasks for User -----------
+    public int getCompletedTaskCountForUser(Long userId) {
+        // JPA query already counts completed tasks (case-sensitive)
+        // agar case-insensitive chahiye toh query me LOWER() use kar sakte ho
+        return taskRepository.countCompletedTasksByUserId(userId);
     }
+
+
+
 
     public Long getRemainingTasks(Long userId) {
         return taskRepository.findByUserId(userId)
@@ -209,4 +221,13 @@ public class AdminService {
         adminRepository.save(admin);
     }
 
+
+    // ✅ New method to mark task as completed
+    public void markTaskCompleted(Long taskId) {
+        Task task = taskRepository.findById(taskId).orElse(null);
+        if (task != null) {
+            task.setStatus("Completed");
+            taskRepository.save(task);
+        }
+    }
 }

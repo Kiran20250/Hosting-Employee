@@ -32,7 +32,24 @@ header {
 .logo-left { text-align:left; margin-bottom:20px; }
 .logo-left .logo-img { height:80px; width:80px; }
 
-.profile-circle { margin:auto; width:90px; height:90px; background: linear-gradient(to right,#0a1f3d,#063f4e); border-radius:50%; border:1px solid #5c5c5c; margin-bottom:10px; }
+.profile-circle {
+  margin: auto;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid #5c5c5c;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.profile-circle img {
+  padding-top: 24px;
+  margin-bottom: 25px;
+  width: 150px;
+  height: 150px;
+}
+
 .username { font-weight:600; font-size:18px; margin-bottom:20px; }
 .panel-box { background:white; color:#555; padding:15px; border-radius:12px; margin-bottom:20px; font-weight:600; }
 

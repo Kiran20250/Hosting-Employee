@@ -30,10 +30,16 @@
     <!-- Left Panel -->
     <div class="left-panel">
 
-        <div class="profile-circle"></div>
-        <p class="username">${username}</p>
+  <div class="profile-circle">
+            <img src="img/profile.png" alt="Profile Photo" />
+            </div>
+                <p class="username">${username}</p>
         <div class="panel-box">Login Time:<br>${inTime}</div>
+
+        <!--
         <div class="panel-box">No of Tasks Assigned:<br>${taskCount}</div>
+        -->
+<div class="panel-box">No of Tasks COMPLETED:<br>${taskCountCompleted}</div>
         <a href="${pageContext.request.contextPath}/logout" class="btn btn-danger w-100">Logout</a>
     </div>
 
@@ -123,6 +129,13 @@
                 <p><strong>Deadline:</strong> <span id="taskModalDeadline"></span></p>
             </div>
             <div class="modal-footer">
+             <!-- ✅ Completed Button (new) -->
+                          <form action="/admin/complete-task" method="post" style="display:inline;">
+                              <input type="hidden" name="taskId" id="completeTaskId"/>
+                              <button type="submit" class="btn btn-success">Completed</button>
+                          </form>
+
+
                 <button type="button" class="btn btn-primary" id="taskDetailUpdateBtn">Update</button>
                 <button type="button" class="btn btn-danger" id="taskDetailDeleteBtn">Delete</button>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -253,6 +266,12 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("taskModalDeadline").textContent = this.dataset.duedate;
             const priorityMap = {1:"Critical",2:"High",3:"Medium",4:"Low",5:"Optional"};
             document.getElementById("taskModalPriority").textContent = priorityMap[this.dataset.priority];
+
+ // ✅ Set Completed button hidden field
+            console.log("TaskId for completion:", this.dataset.taskId);
+            document.getElementById("completeTaskId").value = this.dataset.taskId;
+
+
 
             // Set Update/Delete buttons
             document.getElementById("taskDetailUpdateBtn").dataset.taskId = this.dataset.taskId;

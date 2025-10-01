@@ -44,24 +44,25 @@
 </div>
 
 
-
-
-
-
-
     <!-- Main Layout -->
     <div class="main-layout">
         <!-- Left Panel -->
         <div class="left-panel">
-            <div class="profile-circle"></div>
+            <div class="profile-circle">
+            <img src="img/profile.png" alt="Profile Photo" />
+            </div>
             <p class="logocircleP" style="font-size:20px; margin-top:10px;">${name}</p>
             <div class="panel-box">
                 In Time:<br> ${inTime}
             </div>
-
+<!--
             <div class="panel-box">
                 No of Tasks Assigned:<br> ${taskCount}
             </div>
+-->
+                              <!-- new -->
+                                <div class="panel-box">No of Tasks Completed:<br>${CompletedTaskCount}</div>
+
         </div>
 
         <!-- Right Panel -->
