@@ -57,7 +57,7 @@
         <div class="employee-rows">
             <c:forEach var="emp" items="${employees}">
                 <div class="employee-row">
-                    <div class="col col-name">${emp.username}</div>
+                    <div class="col col-name">${emp.firstName}</div>
                     <div class="col col-task">
                         <div class="task-list">
                             <c:forEach var="task" items="${emp.tasks}">
@@ -313,3 +313,4 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 </body>
 </html>
+
