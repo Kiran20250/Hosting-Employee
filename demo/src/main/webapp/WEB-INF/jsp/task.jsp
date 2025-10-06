@@ -51,7 +51,7 @@
             <div class="profile-circle">
             <img src="img/profile.png" alt="Profile Photo" />
             </div>
-            <p class="logocircleP" style="font-size:20px; margin-top:10px;">${name}</p>
+            <p class="logocircleP" style="font-size:20px; margin-top:10px;">${fname}</p>
             <div class="panel-box">
                 In Time:<br> ${inTime}
             </div>
@@ -164,3 +164,4 @@
     </script>
 </body>
 </html>
+
