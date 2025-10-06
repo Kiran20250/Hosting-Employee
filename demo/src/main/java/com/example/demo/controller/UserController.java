@@ -252,7 +252,8 @@ public String debugPDFs(Model model) {
 
         model.addAttribute("inTime", inTime);
         model.addAttribute("tasks", tasks);
-        model.addAttribute("name", user.getUsername());
+       //        model.addAttribute("name", user.getUsername());
+        model.addAttribute("fname", user.getFirstName());
 
         // ----------- COMMENTED: No of Tasks Assigned -----------
         // model.addAttribute("taskCount", tasks.size());
@@ -288,7 +289,9 @@ public String debugPDFs(Model model) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         String inTime = user.getInTime() != null ? user.getInTime().format(formatter) : "";
 
-        model.addAttribute("name", user.getUsername());
+    //        model.addAttribute("name", user.getUsername());
+        model.addAttribute("fname", user.getFirstName());
+       
         model.addAttribute("inTime", inTime);
 
         // ----------- COMMENTED: No of Tasks Assigned -----------
@@ -308,5 +311,6 @@ public String debugPDFs(Model model) {
     }
 
 }
+
 
 
